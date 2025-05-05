@@ -1,0 +1,10 @@
+services:
+  nginx:
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    image: image_nginx
+    container_name: nginx_container
+    ports:
+      - "443:443"
+    restart: unless-stopped
