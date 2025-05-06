@@ -1,22 +1,66 @@
 services:
-  nginx:
-    build:
-      context: ./requirements/nginx
-      dockerfile: Dockerfile
-    image: image_nginx
-    container_name: nginx_container
-    ports:
-      - "443:443"
-    restart: unless-stopped
+    mariadb:
+      build:
+        context: ./requirements/mariadb
+        dockerfile: Dockerfile
+      image: image_mariadb
+      container_name: mariadb_container
+      init: true
+      restart: unless-stopped
+      environment:
+        - MARIADB_DATABASE=${MARIADB_DATABASE}
+        - MARIADB_USER=${MARIADB_USER}
+        - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      volumes:
+        - mariadb:/var/lib/mysql
+      networks:
+        - docker-network
   
+    nginx:
+      build:
+        context: ./requirements/nginx
+        dockerfile: Dockerfile
+      image: image_nginx
+      container_name: nginx_container
+      init: true
+      ports:
+        - "443:443"
+      restart: unless-stopped
+      depends_on:
+        - wordpress
+      volumes:
+        - wordpress:/var/www/wordpress
+      networks:
+        - docker-network
+
+    wordpress:
+      build:
+        context: ./requirements/wordpress
+        dockerfile: Dockerfile
+      image: image_wordpress
+      container_name: wordpress_container
+      init: true
+      restart: unless-stopped
+      depends_on:
+        - mariadb
+      volumes:
+      - wordpress:/var/www/wordpress
+      networks:
+        - docker-network
+volumes:
   mariadb:
-    build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-    image: image_mariadb
-    container_name: mariadb_container
-    restart: unless-stopped
-    environment:
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/mariadb
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${HOME}/data/wordpress
+
+networks:
+  docker-network:
+    driver: bridge
