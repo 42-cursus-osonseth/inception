@@ -1,8 +1,7 @@
 services:
+# -----------------------------------------------------------------------
     mariadb:
-      build:
-        context: ./requirements/mariadb
-        dockerfile: Dockerfile
+      build: ./requirements/mariadb
       image: image_mariadb
       container_name: mariadb_container
       init: true
@@ -15,11 +14,9 @@ services:
         - mariadb:/var/lib/mysql
       networks:
         - docker-network
-  
+#-------------------------------------------------------------------------- 
     nginx:
-      build:
-        context: ./requirements/nginx
-        dockerfile: Dockerfile
+      build: ./requirements/nginx
       image: image_nginx
       container_name: nginx_container
       init: true
@@ -32,21 +29,42 @@ services:
         - wordpress:/var/www/wordpress
       networks:
         - docker-network
-
+# -----------------------------------------------------------------------
     wordpress:
-      build:
-        context: ./requirements/wordpress
-        dockerfile: Dockerfile
+      build: ./requirements/wordpress
       image: image_wordpress
       container_name: wordpress_container
       init: true
       restart: unless-stopped
+      environment:
+        - MARIADB_DATABASE=${MARIADB_DATABASE}
+        - MARIADB_USER=${MARIADB_USER}
+        - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+        - WORDPRESS_ADMIN_USER=${WORDPRESS_ADMIN_USER}
+        - WORDPRESS_ADMIN_PASSWORD=${WORDPRESS_ADMIN_PASSWORD}
+        - WORDPRESS_ADMIN_EMAIL=${WORDPRESS_ADMIN_EMAIL}
+        - WORDPRESS_USER=${WORDPRESS_USER}
+        - WORDPRESS_PASSWORD=${WORDPRESS_PASSWORD}
       depends_on:
         - mariadb
       volumes:
-      - wordpress:/var/www/wordpress
+        - wordpress:/var/www/wordpress
       networks:
         - docker-network
+# -----------------------------------------------------------------------
+    # static-site:
+    #   build:
+    #     context: ./requirements/bonus/static_site
+    #     dockerfile: Dockerfile
+    #   image: image_static_site
+    #   container_name: static_site_container
+    #   init: true
+    #   ports:
+    #     - "80:80"
+    #   restart: unless-stopped
+    #   networks:
+    #     - docker-network
+# -----------------------------------------------------------------------
 volumes:
   mariadb:
     driver: local
@@ -60,7 +78,7 @@ volumes:
       type: none
       o: bind
       device: ${HOME}/data/wordpress
-
+# -----------------------------------------------------------------------
 networks:
   docker-network:
     driver: bridge

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
 mysqld --user=mysql --bootstrap <<EOF
@@ -8,3 +9,4 @@ CREATE USER IF NOT EXISTS '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_PASSWOR
 GRANT ALL PRIVILEGES ON \`${MARIADB_DATABASE}\`.* TO '${MARIADB_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
+touch /var/lib/mysql/initialized
