@@ -14,7 +14,7 @@ services:
         - mariadb:/var/lib/mysql
       networks:
         - docker-network
-#-------------------------------------------------------------------------- 
+#-----------------------------------------------------------------------
     nginx:
       build: ./requirements/nginx
       image: image_nginx
@@ -91,6 +91,17 @@ services:
         - FTP_PASSWORD=${FTP_PASSWORD}
       volumes:
         - wordpress:/var/www/wordpress
+      networks:
+        - docker-network
+# -----------------------------------------------------------------------
+    adminer:
+      build: ./requirements/bonus/adminer
+      image: image_adminer
+      container_name: adminer_container
+      init: true
+      ports:
+        - "8080:8080"
+      restart: unless-stopped
       networks:
         - docker-network
 # -----------------------------------------------------------------------
