@@ -53,15 +53,27 @@ services:
         - docker-network
 # -----------------------------------------------------------------------
     static-site:
-      build:
-        context: ./requirements/bonus/static_site
-        dockerfile: Dockerfile
+      build: ./requirements/bonus/static_site
       image: image_static_site
       container_name: static_site_container
       init: true
       ports:
         - "80:80"
       restart: unless-stopped
+      networks:
+        - docker-network
+# -----------------------------------------------------------------------
+    portainer:
+      build: ./requirements/bonus/portainer
+      image: image_portainer
+      container_name: portainer_container
+      init: true
+      ports:
+        - "9000:9000"
+      restart: unless-stopped
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - portainer:/data
       networks:
         - docker-network
 # -----------------------------------------------------------------------
@@ -78,6 +90,11 @@ volumes:
       type: none
       o: bind
       device: ${HOME}/data/wordpress
+  portainer:
+    driver_opts:
+      o: bind
+      type: none
+      device: ${HOME}/data/portainer
 # -----------------------------------------------------------------------
 networks:
   docker-network:
