@@ -52,18 +52,18 @@ services:
       networks:
         - docker-network
 # -----------------------------------------------------------------------
-    # static-site:
-    #   build:
-    #     context: ./requirements/bonus/static_site
-    #     dockerfile: Dockerfile
-    #   image: image_static_site
-    #   container_name: static_site_container
-    #   init: true
-    #   ports:
-    #     - "80:80"
-    #   restart: unless-stopped
-    #   networks:
-    #     - docker-network
+    static-site:
+      build:
+        context: ./requirements/bonus/static_site
+        dockerfile: Dockerfile
+      image: image_static_site
+      container_name: static_site_container
+      init: true
+      ports:
+        - "80:80"
+      restart: unless-stopped
+      networks:
+        - docker-network
 # -----------------------------------------------------------------------
 volumes:
   mariadb:
