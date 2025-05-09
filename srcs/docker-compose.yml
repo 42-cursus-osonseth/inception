@@ -47,6 +47,7 @@ services:
         - WORDPRESS_PASSWORD=${WORDPRESS_PASSWORD}
       depends_on:
         - mariadb
+        - redis
       volumes:
         - wordpress:/var/www/wordpress
       networks:
@@ -86,6 +87,8 @@ services:
         - "21:21"
         - "21000-21010:21000-21010"
       restart: unless-stopped
+      depends_on:
+        - wordpress
       environment:
         - FTP_USER=${FTP_USER}
         - FTP_PASSWORD=${FTP_PASSWORD}
@@ -101,6 +104,15 @@ services:
       init: true
       ports:
         - "8080:8080"
+      restart: unless-stopped
+      networks:
+        - docker-network
+# -----------------------------------------------------------------------
+    redis:
+      build: requirements/bonus/redis
+      image: image_redis
+      container_name: redis_container
+      init: true
       restart: unless-stopped
       networks:
         - docker-network
